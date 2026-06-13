@@ -1,0 +1,42 @@
+{
+  "name": "vidilearn",
+  "version": "1.0.0",
+  "description": "Production-grade global content extraction agent for YouTube and Web",
+  "type": "module",
+  "bin": {
+    "vidilearn": "./bin/vidilearn.js"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node bin/vidilearn.js",
+    "test": "jest",
+    "postinstall": "playwright install chromium"
+  },
+  "keywords": [
+    "cli",
+    "youtube",
+    "transcript",
+    "scraper",
+    "article-extractor",
+    "metadata"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "axios": "^1.6.2",
+    "chalk": "^5.3.0",
+    "cheerio": "^1.0.0-rc.12",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "jsdom": "^23.0.0",
+    "ora": "^7.0.1",
+    "playwright": "^1.40.1",
+    "turndown": "^7.1.2",
+    "youtube-transcript": "^1.0.6",
+    "yt-dlp-exec": "^1.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

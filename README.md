@@ -331,6 +331,17 @@ MIT License
 
 ---
 
+---
+
+## Support
+
+If Vidilearn helps your workflow, consider sponsoring development ❤️
+
+GitHub Sponsors:
+https://github.com/sponsors/sarathi-eng
+
+---
+
 # Author
 
 Built by Alfo Tech Industries

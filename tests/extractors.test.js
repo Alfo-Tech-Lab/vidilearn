@@ -21,12 +21,13 @@ describe('Article Extractor', () => {
     expect(result.title).toBeDefined();
     expect(result.source_url).toBe('https://example.com');
     expect(result.clean_text).toBeDefined();
+    // example.com is short, so it should have been extracted via playwright
+    expect(result.sourceType).toBe('article-dynamic');
   });
 });
 
 describe('YouTube Extractor', () => {
   test('should extract metadata from YouTube video', async () => {
-    // Note: This makes a real network request
     const result = await youtubeExtractor.getMetadata('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
     expect(result.title).toBeDefined();
     expect(result.channel).toBeDefined();

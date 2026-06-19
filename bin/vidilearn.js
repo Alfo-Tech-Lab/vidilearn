@@ -31,6 +31,10 @@ async function runTask(name, url, taskFn, options = {}) {
     const result = await taskFn(url);
     spinner.succeed(`${name} Complete: ${chalk.green(result.title)}`);
     
+    if (options.prettyPrint) {
+      console.log(JSON.stringify(result, null, 2));
+    }
+
     if (options.save) {
       const filePath = await storageService.save(result, options.format || 'json');
       console.log(`${chalk.dim('Saved to:')} ${chalk.cyan(filePath)}`);
@@ -61,8 +65,8 @@ program
   .option('--embed', 'Generate local embeddings for the content')
   .action(async (url, options) => {
     const type = detectionService.detect(url);
-    if (type === 'youtube' && options.list_langs) {
-      await runTask('List Languages', url, (u) => youtubeExtractor.getSubtitles(u).then(s => ({ title: 'Available Subtitles', languages: Object.keys(s) })), { save: false, pretty: true });
+    if (type === 'youtube' && options.listLangs) {
+      await runTask('List Languages', url, (u) => youtubeExtractor.getSubtitles(u).then(s => ({ title: 'Available Subtitles', languages: Object.keys(s) })), { save: false, prettyPrint: true });
       return;
     }
     const extractor = type === 'youtube' ? youtubeExtractor : articleExtractor;
@@ -141,8 +145,8 @@ program
       console.error(chalk.red('Error: This command only supports YouTube URLs.'));
       process.exit(1);
     }
-    if (options.list_langs) {
-      await runTask('List Languages', url, (u) => youtubeExtractor.getSubtitles(u).then(s => ({ title: 'Available Subtitles', languages: Object.keys(s) })), { save: false, pretty: true });
+    if (options.listLangs) {
+      await runTask('List Languages', url, (u) => youtubeExtractor.getSubtitles(u).then(s => ({ title: 'Available Subtitles', languages: Object.keys(s) })), { save: false, prettyPrint: true });
       return;
     }
     await runTask('Subtitles', url, (u) => youtubeExtractor.getSubtitles(u).then(s => ({ title: 'Subtitles', data: s })), {
@@ -176,8 +180,9 @@ program
       const results = [];
       const queue = [...playlist.video_urls];
 
-      if (!fs.existsSync(options.output_dir)) {
-        fs.mkdirSync(options.output_dir, { recursive: true });
+      const outputDir = options.outputDir || './output';
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
       }
 
       async function processQueue() {
@@ -187,7 +192,7 @@ program
           try {
             const videoResult = await runTask(taskName, videoUrl, (u) => youtubeExtractor.extract(u), { save: false });
             const fileName = `${videoResult.title.replace(/[/\\?%*:|"<>]/g, '-')}.json`;
-            const filePath = path.join(options.output_dir, fileName);
+            const filePath = path.join(outputDir, fileName);
             fs.writeFileSync(filePath, JSON.stringify(videoResult, null, 2));
             results.push(videoResult);
           } catch (err) {
@@ -199,7 +204,7 @@ program
       const workers = Array(Math.min(concurrency, queue.length)).fill(null).map(() => processQueue());
       await Promise.all(workers);
 
-      console.log(chalk.green(`\nDone! Processed ${results.length} videos. Results saved to ${options.output_dir}`));
+      console.log(chalk.green(`\nDone! Processed ${results.length} videos. Results saved to ${outputDir}`));
     } catch (error) {
       spinner.fail(`Playlist Extraction Failed: ${chalk.red(error.message)}`);
       process.exit(1);

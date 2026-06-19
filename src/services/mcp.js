@@ -12,7 +12,7 @@ export async function startMcpServer() {
   const server = new Server(
     {
       name: "vidilearn",
-      version: "1.0.0",
+      version: "1.1.0",
     },
     {
       capabilities: {

@@ -4,7 +4,7 @@
   "description": "Production-grade global content extraction agent for YouTube and Web",
   "type": "module",
   "bin": {
-    "vidilearn": "./bin/vidilearn.js"
+    "vidilearn": "bin/vidilearn.js"
   },
   "main": "src/index.js",
   "scripts": {

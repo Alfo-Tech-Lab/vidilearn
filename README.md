@@ -1,21 +1,17 @@
-# Vidilearn
-
 <div align="center">
 
+# Vidilearn
+
+### Teach your AI using YouTube videos and the web
+
+Production-grade content extraction agent for YouTube and the web. Extract transcripts, clean articles, and structured metadata locally — zero API keys, with automatic Playwright fallback for dynamic sites.
+
 [![npm version](https://img.shields.io/npm/v/vidilearn.svg)](https://www.npmjs.com/package/vidilearn)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/Alfo-Tech-Lab/vidilearn/actions/workflows/ci.yml/badge.svg)](https://github.com/Alfo-Tech-Lab/vidilearn/actions)
+[![npm downloads](https://img.shields.io/npm/dt/vidilearn.svg)](https://www.npmjs.com/package/vidilearn)
+[![CI](https://github.com/Alfo-Tech-Lab/vidilearn/actions/workflows/ci.yml/badge.svg)](https://github.com/Alfo-Tech-Lab/vidilearn/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-# Teach your AI using YouTube & Web
-
-Lightweight AI-first extraction CLI for transcripts, clean articles, and structured metadata — without API keys. Automatic Playwright fallback for dynamic sites.
-
-[Installation](#installation) •
-[Quick Start](#quick-start) •
-[Features](#features) •
-[AI Workflows](#ai--agent-workflows) •
-[CLI Usage](#cli-usage) •
-[JSON Output](#json-output)
+[Installation](#installation) • [Quick Start](#quick-start) • [Features](#features) • [CLI Usage](#cli-usage) • [MCP Server](#mcp-server-mode) • [AI Workflows](#ai--agent-workflows)
 
 </div>
 
@@ -23,78 +19,135 @@ Lightweight AI-first extraction CLI for transcripts, clean articles, and structu
 
 ## Overview
 
-Vidilearn is a modern developer-first CLI designed for AI agents, RAG pipelines, automation systems, MCP servers, Codex CLI workflows, Gemini CLI integrations, and educational tooling.
+Vidilearn is a modern developer-first CLI and MCP server designed for AI agents, RAG pipelines, automation systems, Codex CLI workflows, Gemini CLI integrations, and educational tooling.
 
-Extract structured knowledge from YouTube videos directly into your AI systems.
+Extract structured knowledge from YouTube videos **and web articles** directly into your AI systems.
 
-No API keys.  
-No browser automation.  
+No API keys.
 No bloated setup.
+No vendor lock-in.
 
 ---
 
-# Features
+## Features
 
-- Extract transcripts
-- Download subtitles
-- Parse descriptions
-- Extract chapters & timestamps
-- Structured JSON output
-- AI-ready data formatting
-- Fast CLI workflow
-- No API key required
-- Lightweight architecture
-- Automation-friendly
-- Works with AI agents & MCP systems
-- Clean terminal experience
+**YouTube**
+- Transcript extraction
+- Subtitle download with multi-language support (`--lang`, `--list-langs`)
+- Chapter & timestamp extraction
+- Description and metadata parsing
+- Batch playlist extraction
+- Live/premiere video detection
+- Streaming transcript output for long videos
+
+**Web**
+- Clean article extraction from static pages
+- Automatic Playwright fallback for JS-rendered / dynamic sites
+- Same structured JSON schema as YouTube output
+
+**AI-native**
+- Native MCP server mode — expose extraction as tools, not just CLI output
+- Local embedding generation via `@xenova/transformers` — no external embedding API needed
+- AI-ready structured JSON output across every command
+
+**Engineering**
+- Zero API keys required
+- Lightweight by default — Playwright loads lazily, only when the fallback path is triggered
+- Automation-friendly, scriptable, pipeable
 
 ---
 
-# Installation
+## Installation
 
-## Global Installation
+### Global Installation
 
-```bash
+```
 npm install -g vidilearn
 ```
 
-## Verify Installation
+### Verify Installation
 
-```bash
+```
 vidilearn --help
 ```
 
 ---
 
-# Quick Start
+## Quick Start
 
-## Extract Video Knowledge
+### Extract a YouTube video
 
-```bash
+```
 vidilearn extract "https://youtube.com/watch?v=VIDEO_ID"
 ```
 
----
+### Extract a web article
 
-# Rule of Thumb
-
-Whenever a URL contains special characters like `?`, `&`, or `=`, always wrap it in quotes.
-
-## Incorrect
-
-```bash
-vidilearn extract https://youtube.com/watch?v=abc123&list=xyz
+```
+vidilearn extract "https://example.com/some-article"
 ```
 
-## Correct
+Vidilearn auto-detects YouTube vs. general web URLs and routes to the correct extractor.
 
-```bash
-vidilearn extract "https://youtube.com/watch?v=abc123&list=xyz"
-```
+> **Rule of thumb:** Whenever a URL contains `?`, `&`, or `=`, wrap it in quotes to avoid shell interpretation issues.
 
 ---
 
-# Example JSON Output
+## CLI Usage
+
+### YouTube extraction
+
+```
+vidilearn extract "<youtube-url>"                # full extraction
+vidilearn extract "<youtube-url>" --pretty        # pretty-printed JSON
+vidilearn extract "<youtube-url>" --transcript    # transcript only
+vidilearn extract "<youtube-url>" --chapters      # chapters only
+vidilearn extract "<youtube-url>" --metadata      # metadata only
+vidilearn extract "<youtube-url>" --stream        # stream transcript as it's parsed
+```
+
+### Subtitle language control
+
+```
+vidilearn extract "<youtube-url>" --list-langs        # list available subtitle languages
+vidilearn extract "<youtube-url>" --lang es            # extract Spanish subtitles
+```
+
+### Batch playlist extraction
+
+```
+vidilearn extract-playlist "<playlist-url>"
+vidilearn extract-playlist "<playlist-url>" --concurrency 5
+vidilearn extract-playlist "<playlist-url>" --output-dir ./videos
+```
+
+### Web article extraction
+
+```
+vidilearn extract "<article-url>"
+```
+
+Static pages are parsed directly. If the page returns little to no usable content (typical of JS-heavy sites), vidilearn automatically retries using a headless Playwright browser.
+
+### Local embeddings
+
+```
+vidilearn extract "<url>" --embed
+```
+
+Outputs `{ chunk, embedding }` pairs generated locally — ready for ingestion into a vector store, no API key required.
+
+### Save output
+
+```
+vidilearn extract "<url>" > output.json
+```
+
+---
+
+## Example JSON Output
+
+### YouTube
 
 ```json
 {
@@ -104,250 +157,101 @@ vidilearn extract "https://youtube.com/watch?v=abc123&list=xyz"
   "description": "Learn how to build AI agents...",
   "transcript": "...",
   "chapters": [
-    {
-      "title": "Introduction",
-      "timestamp": "00:00"
-    },
-    {
-      "title": "Agent Architecture",
-      "timestamp": "03:42"
-    }
+    { "title": "Introduction", "timestamp": "00:00" },
+    { "title": "Agent Architecture", "timestamp": "03:42" }
   ]
+}
+```
+
+### Web article
+
+```json
+{
+  "title": "Understanding Transformer Architectures",
+  "source_url": "https://example.com/transformers",
+  "byline": "Jane Doe",
+  "published_date": "2026-04-02",
+  "clean_text": "...",
+  "word_count": 1840
 }
 ```
 
 ---
 
-# CLI Usage
-
-## Basic Extraction (YouTube or Web)
-
-```bash
-vidilearn extract "https://youtube.com/watch?v=VIDEO_ID"
-vidilearn extract "https://example.com/article"
-```
-
-## Advanced Extraction Options
-
-### Generate Local Embeddings
-Automatically chunks text and generates vector embeddings using `all-MiniLM-L6-v2`.
-```bash
-vidilearn extract "<url>" --embed
-```
-
-### Streaming Transcript
-Stream the transcript to stdout in real-time.
-```bash
-vidilearn extract "<youtube-url>" --stream
-```
-
-### Multi-language Support
-```bash
-vidilearn extract "<youtube-url>" --list-langs
-vidilearn extract "<youtube-url>" --lang es
-```
-
-### Pretty JSON Output
-```bash
-vidilearn extract "<url>" --pretty
-```
-
-## Transcript Only
-```bash
-vidilearn transcript "<youtube-url>" --print
-vidilearn transcript "<youtube-url>" --lang ja
-```
-
-## Batch Playlist Processing
-Extract every video in a playlist with concurrency control.
-```bash
-vidilearn extract-playlist "<playlist-url>" --concurrency 5 --output-dir ./my-data
-```
-
 ## MCP Server Mode
-Expose Vidilearn tools to AI agents via Model Context Protocol.
-```bash
+
+Run vidilearn as a native MCP server so agents can call extraction directly as a tool, instead of shelling out to the CLI.
+
+```
 vidilearn mcp-server
 ```
 
+Exposes `extract_youtube` and `extract_web` as MCP tools over stdio transport — compatible with Claude, Gemini CLI, and any MCP-compatible agent framework.
+
 ---
 
-# AI & Agent Workflows
+## AI & Agent Workflows
 
 Vidilearn is designed for modern AI ecosystems.
 
-## Compatible With
-
-- OpenAI Agents
-- MCP Servers
-- Codex CLI
-- Gemini CLI
+**Compatible with:**
+- MCP Servers (native)
 - Claude Workflows
-- LangChain
-- LangGraph
-- CrewAI
-- AutoGen
-- RAG Pipelines
-- Vector Databases
-- Local AI Systems
-- AI Automation Agents
-
----
-
-# MCP Server Integration
-
-Use Vidilearn inside MCP-based AI systems to feed YouTube knowledge directly into your agents.
-
-## Example
-
-```bash
-vidilearn extract "<youtube-url>" --json
-```
-
-Pipe the structured output into:
-- memory systems
-- vector stores
-- retrieval pipelines
-- autonomous agents
-
----
-
-# Codex CLI Workflow
-
-Use Vidilearn to give coding agents contextual learning data from technical YouTube videos.
-
-## Example
-
-```bash
-vidilearn extract "https://youtube.com/watch?v=VIDEO_ID" > context.json
-```
-
-Then feed the extracted data into:
+- Gemini CLI
 - Codex CLI
-- AI coding agents
-- autonomous developer workflows
+- OpenAI Agents
+- LangChain / LangGraph
+- CrewAI / AutoGen
+- RAG pipelines
+- Vector databases
+- Local AI systems
+
+**Use cases:**
+- **RAG pipelines** — convert long-form videos and articles into searchable knowledge bases
+- **AI memory systems** — store extracted knowledge into persistent agent memory
+- **Educational applications** — turn lectures and tutorials into structured AI-readable datasets
+- **Autonomous agents** — let agents learn directly from YouTube and the web via the MCP server
+- **Research systems** — extract technical insights from conferences, talks, and long-form articles
 
 ---
 
-# Gemini CLI Integration
+## Why Vidilearn?
 
-Use Vidilearn as a knowledge ingestion layer for Gemini-powered automation systems.
-
-## Example Workflow
-
-```bash
-vidilearn extract "<youtube-url>" --pretty
-```
-
-Pass the extracted transcript into:
-- Gemini CLI prompts
-- summarization pipelines
-- AI research systems
-- educational assistants
-
----
-
-# AI Use Cases
-
-## RAG Pipelines
-
-Convert long-form educational videos into searchable knowledge bases.
-
-## AI Memory Systems
-
-Store YouTube knowledge into persistent AI memory.
-
-## Educational Applications
-
-Turn lectures into structured AI-readable datasets.
-
-## Autonomous Agents
-
-Allow AI agents to learn directly from YouTube.
-
-## Research Systems
-
-Extract technical insights from conferences, tutorials, and talks.
-
----
-
-# Architecture Philosophy
-
-Vidilearn is built around:
-
-- simplicity
-- speed
-- AI-first workflows
-- lightweight tooling
-- structured extraction
-- automation compatibility
-
----
-
-# Why Vidilearn?
-
-Most YouTube extraction tools:
-
-- require API keys
-- are bloated
-- break frequently
-- are not AI-focused
-- have poor automation support
+Most extraction tools require API keys, are bloated, break frequently, or aren't built with AI agents in mind.
 
 Vidilearn focuses on:
-
-- developer experience
-- AI-native workflows
-- structured outputs
-- clean CLI ergonomics
-- production-ready automation
-
----
-
-# Performance Goals
-
-- Fast extraction
-- Minimal dependencies
-- Low memory footprint
-- Automation-safe architecture
-- Reliable structured output
+- Developer experience
+- AI-native workflows (CLI **and** MCP)
+- Structured, consistent outputs across content types
+- Clean CLI ergonomics
+- Production-ready automation
 
 ---
 
-# Roadmap
+## Roadmap
 
-- [x] Streaming transcript extraction
-- [x] Batch playlist processing
-- [x] MCP-native server mode
-- [x] Local embedding pipeline support
-- [x] Multi-language subtitle support
-- [x] Live stream support
-- [ ] Vector database integrations
-- [ ] AI summarization modules
+- Vector database integrations (Pinecone, Weaviate, Qdrant adapters)
+- AI summarization modules
+- Live stream partial-transcript extraction
+- Browser extension companion
 
 ---
 
-# Contributing
+## Contributing
 
-Contributions are welcome.
-
-Ideas, improvements, bug reports, and feature requests are appreciated.
+Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup steps and the PR checklist.
 
 ---
 
-# Security
+## Security
 
-Vidilearn does not require API keys or authentication tokens.
-
-Always review extracted content before using it in production AI systems.
+Vidilearn does not require API keys or authentication tokens. Always review extracted content before using it in production AI systems.
 
 ---
 
-# License
+## License
 
-MIT License
-
----
+MIT — see [LICENSE](./LICENSE).
 
 ---
 
@@ -355,15 +259,12 @@ MIT License
 
 If Vidilearn helps your workflow, consider sponsoring development ❤️
 
-GitHub Sponsors:
-https://github.com/sponsors/sarathi-eng
+GitHub Sponsors: https://github.com/sponsors/sarathi-eng
 
 ---
 
-# Author
+## Author
 
 Built by Alfo Tech Industries
-
----
 
 © 2026 Alfo Tech Industries. All rights reserved.

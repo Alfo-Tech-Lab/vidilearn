@@ -2,9 +2,13 @@
 
 <div align="center">
 
-# Teach your AI using YouTube videos
+[![npm version](https://img.shields.io/npm/v/vidilearn.svg)](https://www.npmjs.com/package/vidilearn)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/Alfo-Tech-Lab/vidilearn/actions/workflows/ci.yml/badge.svg)](https://github.com/Alfo-Tech-Lab/vidilearn/actions)
 
-Lightweight AI-first YouTube extraction CLI for transcripts, subtitles, chapters, descriptions, and structured metadata — without API keys.
+# Teach your AI using YouTube & Web
+
+Lightweight AI-first extraction CLI for transcripts, clean articles, and structured metadata — without API keys. Automatic Playwright fallback for dynamic sites.
 
 [Installation](#installation) •
 [Quick Start](#quick-start) •
@@ -116,40 +120,54 @@ vidilearn extract "https://youtube.com/watch?v=abc123&list=xyz"
 
 # CLI Usage
 
-## Basic Extraction
+## Basic Extraction (YouTube or Web)
 
 ```bash
-vidilearn extract "<youtube-url>"
+vidilearn extract "https://youtube.com/watch?v=VIDEO_ID"
+vidilearn extract "https://example.com/article"
 ```
 
-## Save Output
+## Advanced Extraction Options
 
+### Generate Local Embeddings
+Automatically chunks text and generates vector embeddings using `all-MiniLM-L6-v2`.
 ```bash
-vidilearn extract "<youtube-url>" > output.json
+vidilearn extract "<url>" --embed
 ```
 
-## Pretty JSON Output
-
+### Streaming Transcript
+Stream the transcript to stdout in real-time.
 ```bash
-vidilearn extract "<youtube-url>" --pretty
+vidilearn extract "<youtube-url>" --stream
+```
+
+### Multi-language Support
+```bash
+vidilearn extract "<youtube-url>" --list-langs
+vidilearn extract "<youtube-url>" --lang es
+```
+
+### Pretty JSON Output
+```bash
+vidilearn extract "<url>" --pretty
 ```
 
 ## Transcript Only
-
 ```bash
-vidilearn extract "<youtube-url>" --transcript
+vidilearn transcript "<youtube-url>" --print
+vidilearn transcript "<youtube-url>" --lang ja
 ```
 
-## Chapters Only
-
+## Batch Playlist Processing
+Extract every video in a playlist with concurrency control.
 ```bash
-vidilearn extract "<youtube-url>" --chapters
+vidilearn extract-playlist "<playlist-url>" --concurrency 5 --output-dir ./my-data
 ```
 
-## Metadata Only
-
+## MCP Server Mode
+Expose Vidilearn tools to AI agents via Model Context Protocol.
 ```bash
-vidilearn extract "<youtube-url>" --metadata
+vidilearn mcp-server
 ```
 
 ---
@@ -298,14 +316,14 @@ Vidilearn focuses on:
 
 # Roadmap
 
-- Streaming transcript extraction
-- Batch playlist processing
-- MCP-native server mode
-- Local embedding pipeline support
-- Vector database integrations
-- AI summarization modules
-- Multi-language subtitle support
-- Live stream support
+- [x] Streaming transcript extraction
+- [x] Batch playlist processing
+- [x] MCP-native server mode
+- [x] Local embedding pipeline support
+- [x] Multi-language subtitle support
+- [x] Live stream support
+- [ ] Vector database integrations
+- [ ] AI summarization modules
 
 ---
 

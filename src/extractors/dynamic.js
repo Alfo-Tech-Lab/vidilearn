@@ -1,6 +1,5 @@
-import { chromium } from 'playwright';
-import { Readability } from '@mozilla/readability';
 import { JSDOM } from 'jsdom';
+import { Readability } from '@mozilla/readability';
 
 /**
  * Dynamic Extractor (Playwright)
@@ -9,6 +8,9 @@ export const dynamicExtractor = {
   async extract(url) {
     let browser;
     try {
+      // Lazy load playwright
+      const { chromium } = await import('playwright');
+
       browser = await chromium.launch({ headless: true });
       const page = await browser.newPage();
       await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
@@ -20,14 +22,18 @@ export const dynamicExtractor = {
 
       await browser.close();
 
+      const clean_text = article?.textContent || 'No content found.';
+
       return {
         sourceType: 'article-dynamic',
-        url,
+        source_url: url,
         title: article?.title || 'Unknown',
-        description: article?.excerpt,
-        articleContent: article?.textContent || 'No content found.',
-        author: article?.byline,
+        byline: article?.byline,
+        published_date: null, // Harder to extract from rendered DOM without specific selectors
+        clean_text,
+        word_count: clean_text.split(/\s+/).length,
         metadata: {
+          excerpt: article?.excerpt,
           siteName: article?.siteName,
           renderedBy: 'playwright'
         },

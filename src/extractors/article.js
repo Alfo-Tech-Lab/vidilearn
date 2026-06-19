@@ -30,17 +30,18 @@ export const articleExtractor = {
 
       return {
         sourceType: 'article',
-        url,
+        source_url: url,
         title: article.title,
-        description: article.excerpt,
-        articleContent: article.textContent,
-        author: article.byline,
-        publishedDate: this.extractDate($),
-        headings: this.extractHeadings($),
-        images: this.extractImages($),
+        byline: article.byline,
+        published_date: this.extractDate($),
+        clean_text: article.textContent,
+        word_count: article.textContent.split(/\s+/).length,
         metadata: {
+          excerpt: article.excerpt,
           siteName: article.siteName,
-          lang: article.lang
+          lang: article.lang,
+          headings: this.extractHeadings($),
+          images: this.extractImages($)
         },
         extractedAt: new Date().toISOString()
       };

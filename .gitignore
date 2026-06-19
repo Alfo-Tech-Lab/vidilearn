@@ -1,9 +1,11 @@
-node_modules/
-output/
-.env
 *.log
+.DS_Store
+.cache/
+.env
+.playwright/
+node_modules/
 npm-debug.log*
+output/
 yarn-debug.log*
 yarn-error.log*
-.DS_Store
-.playwright/
+yt-dlp

@@ -2,6 +2,7 @@
 .DS_Store
 .cache/
 .env
+.env.*
 .playwright/
 node_modules/
 npm-debug.log*
@@ -9,3 +10,19 @@ output/
 yarn-debug.log*
 yarn-error.log*
 yt-dlp
+
+# Security: Never commit secrets or databases
+*.db
+*-key.json
+*.pem
+*.p12
+sentinelops-agent-key.json
+
+# Security: Exclude temp files from clones and audio transcription
+temp_*
+*.raw
+
+# Security: Exclude coverage and dist
+dist/
+coverage/
+

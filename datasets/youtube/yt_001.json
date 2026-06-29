@@ -1,0 +1,12 @@
+{
+  "id": "yt_001",
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "category": "music",
+  "language": "en",
+  "duration_minutes": 3,
+  "expected": {
+    "hasTranscript": true,
+    "minWords": 100,
+    "hasChapters": false
+  }
+}

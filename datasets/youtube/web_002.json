@@ -1,0 +1,10 @@
+{
+  "id": "web_002",
+  "url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+  "category": "web",
+  "language": "en",
+  "expected": {
+    "hasTranscript": false,
+    "minWords": 100
+  }
+}

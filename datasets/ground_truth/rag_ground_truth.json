@@ -1,0 +1,17 @@
+[
+  {
+    "query": "What are the design patterns for AI agents?",
+    "expected_document": "What's next for AI agentic workflows ft. Andrew Ng of AI Fund",
+    "expected_keywords": ["reflection", "planning", "multi-agent", "agentic"]
+  },
+  {
+    "query": "How do compound AI systems differ from monolithic models?",
+    "expected_document": "What are AI Agents?",
+    "expected_keywords": ["compound", "modular", "system", "monolithic"]
+  },
+  {
+    "query": "What is a large language model?",
+    "expected_document": "Intro to Large Language Models",
+    "expected_keywords": ["language", "model", "neural", "tokens"]
+  }
+]

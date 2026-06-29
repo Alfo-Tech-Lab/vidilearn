@@ -1,4 +1,11 @@
-output/
 node_modules/
-.env
+*.db
 *.log
+.env
+.env.*
+temp_*
+*.raw
+sentinelops-agent-key.json
+*-key.json
+dist/
+coverage/

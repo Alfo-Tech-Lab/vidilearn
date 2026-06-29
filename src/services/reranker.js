@@ -1,4 +1,4 @@
-import { pipeline } from '@xenova/transformers';
+import { pipeline } from '@huggingface/transformers';
 import chalk from 'chalk';
 
 class RerankerService {
@@ -26,7 +26,7 @@ class RerankerService {
   async _loadModel() {
     if (this.model) return this.model;
     try {
-      this.model = await pipeline('text-classification', 'Xenova/ms-marco-MiniLM-L-6-v2');
+      this.model = await pipeline('text-classification', 'Xenova/ms-marco-MiniLM-L-6-v2', { dtype: 'fp32' });
       await this.model('warmup query', { text_pair: 'warmup doc' }).catch(() => null);
       return this.model;
     } catch (err) {

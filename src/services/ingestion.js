@@ -311,8 +311,8 @@ export const ingestionService = {
       const buffer = fs.readFileSync(rawAudioPath);
       const floatArr = new Float32Array(buffer.buffer, buffer.byteOffset, buffer.byteLength / 4);
 
-      const { pipeline } = await import('@xenova/transformers');
-      const transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en');
+      const { pipeline } = await import('@huggingface/transformers');
+      const transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en', { dtype: 'fp32' });
       const result = await transcriber(floatArr);
       return result.text;
     } catch (err) {

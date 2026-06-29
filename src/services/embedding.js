@@ -1,4 +1,4 @@
-import { pipeline } from '@xenova/transformers';
+import { pipeline } from '@huggingface/transformers';
 import axios from 'axios';
 import { configService } from './config.js';
 
@@ -15,7 +15,7 @@ export const embeddingService = {
     if (!this.extractor) {
       try {
         const modelName = configService.get('embedding.model') || 'Xenova/all-MiniLM-L6-v2';
-        this.extractor = await pipeline('feature-extraction', modelName);
+        this.extractor = await pipeline('feature-extraction', modelName, { dtype: 'fp32' });
       } catch (err) {
         console.warn("Transformers.js pipeline initialization warning:", err.message);
       }

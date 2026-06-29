@@ -1,10 +1,10 @@
 {
   "name": "vidilearn",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "AI-native universal knowledge ingestion and semantic retrieval engine with hybrid BM25+vector search, MCP server integration, and offline embeddings",
   "type": "module",
   "bin": {
-    "vidilearn": "bin/vidilearn.js"
+    "vidilearn": "./bin/vidilearn.js"
   },
   "main": "src/index.js",
   "engines": {
@@ -43,11 +43,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vidilearn/vidilearn"
+    "url": "git+https://github.com/Alfo-Tech-Lab/vidilearn.git"
   },
-  "homepage": "https://github.com/vidilearn/vidilearn#readme",
+  "homepage": "https://github.com/Alfo-Tech-Lab/vidilearn#readme",
   "bugs": {
-    "url": "https://github.com/vidilearn/vidilearn/issues"
+    "url": "https://github.com/Alfo-Tech-Lab/vidilearn/issues"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

@@ -1,6 +1,6 @@
 {
   "name": "vidilearn",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "AI-native universal knowledge ingestion and semantic retrieval engine with hybrid BM25+vector search, MCP server integration, and offline embeddings",
   "type": "module",
   "bin": {
@@ -76,5 +76,8 @@
   },
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "overrides": {
+    "protobufjs": "^7.6.4"
   }
 }

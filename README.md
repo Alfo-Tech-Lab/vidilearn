@@ -1,97 +1,269 @@
-# Vidilearn
+<div align="center">
 
-**Vidilearn** is a local-first, AI-native universal knowledge ingestion and semantic hybrid retrieval engine. It operates completely offline with zero API costs, delivering sub-100ms hybrid searches over local documents, video transcripts, web pages, and RSS feeds.
+# ⚡ Vidilearn
+
+### AI-Native Universal Knowledge Ingestion & Semantic Hybrid Retrieval Engine
+
+[![npm version](https://img.shields.io/npm/v/vidilearn.svg?style=flat-square&color=0891B2)](https://www.npmjs.com/package/vidilearn)
+[![npm downloads](https://img.shields.io/npm/dm/vidilearn.svg?style=flat-square&color=10B981)](https://www.npmjs.com/package/vidilearn)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg?style=flat-square)](package.json)
+[![MCP Protocol](https://img.shields.io/badge/MCP-Compatible-purple.svg?style=flat-square)](https://modelcontextprotocol.io/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-orange.svg?style=flat-square)](CONTRIBUTING.md)
+
+<p align="center">
+  <b>Vidilearn</b> is a production-grade, local-first knowledge retrieval engine designed for autonomous AI agents, coding environments, and developers. It ingests multi-modal documentation, web pages, and video transcripts into a unified SQLite database, delivering sub-100ms hybrid searches with zero external API dependencies.
+</p>
+
+[Quick Start](#-quick-start) • [Architecture](#-architecture) • [MCP Server Setup](#-model-context-protocol-mcp-integration) • [Benchmarks](#-performance-benchmarks) • [CLI Reference](#-command-reference)
+
+</div>
 
 ---
 
-## ✨ Features
-*   **Universal Ingestion**: Supports YouTube video captions, PDFs, DOCX files, Markdown/text documents, RSS feeds, and local folder directories.
-*   **High-Speed Vector Search**: Powered by `sqlite-vec` (compiled native C++ distance logic), querying 100K+ vector chunks in under **200ms**.
-*   **Hybrid BM25 + Semantic Retrieval**: Fuses virtual text match ranking (FTS5) with vector similarity (ANN) using Reciprocal Rank Fusion (RRF) and dynamic query weighting.
-*   **Neural Reranker**: Optimizes results using a batched local cross-encoder model (`ms-marco-MiniLM-L-6-v2`) with startup session warm-up.
-*   **Local AI Synthesis**: GeneratesCornell study notes, quizzes ( Obsidian/Anki TSV formats), and summaries (`bullet`, `twitter-thread`, `blog`, `notes`, `podcast-recap`) using local Ollama models.
-*   **Concurrency Protected**: Protects Node event loop threads from thundering herd locks using memory-safe LRU caching and single-flight request coalescing.
+## 🌟 Key Highlights
+
+- **⚡ Native C++ Vector Search**: Powered by `sqlite-vec` and `better-sqlite3`, querying 100,000+ vector chunks in **under 60ms** with zero memory leaks.
+- **🔍 Hybrid Retrieval (RRF)**: Fuses Full-Text Search (`FTS5` BM25) with Approximate Nearest Neighbors (`ANN` vector search) using dynamic Reciprocal Rank Fusion.
+- **🎯 Batched Neural Reranker**: Integrates local cross-encoder models (`ms-marco-MiniLM-L-6-v2`) to re-score candidate chunks for maximum precision.
+- **🤖 Native MCP Server**: Built on `@modelcontextprotocol/sdk` to serve live retrieval tools directly to AI coding agents (Claude Desktop, Cursor, Antigravity, OpenAI Codex).
+- **📥 Universal Ingestion**: Ingests YouTube transcripts, dynamic web pages, PDF documents, DOCX files, Markdown trees, and RSS feeds.
+- **🔒 100% Offline & Private**: Zero cloud API keys required. All embeddings (`all-MiniLM-L6-v2`), parsing, and storage remain strictly on your local machine.
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+flowchart TD
+    subgraph Ingestion ["1. Universal Ingestion"]
+        YT["YouTube Captions / yt-dlp"]
+        DOC["PDFs / DOCX / Markdown"]
+        WEB["Web URLs / RSS Feeds"]
+    end
+
+    subgraph Processing ["2. Chunking & Embeddings"]
+        CH["Sliding Window Chunker"]
+        EMB["HuggingFace Transformers (all-MiniLM-L6-v2)"]
+    end
+
+    subgraph Storage ["3. Embedded Storage (SQLite)"]
+        FTS[("FTS5 Full-Text Index")]
+        VEC[("sqlite-vec C++ Native Index")]
+    end
+
+    subgraph Retrieval ["4. Hybrid Retrieval Engine"]
+        BM25["BM25 Keyword Scoring"]
+        ANN["Cosine Similarity ANN"]
+        RRF["Reciprocal Rank Fusion (RRF)"]
+        RERANK["Cross-Encoder Reranker (ms-marco-MiniLM)"]
+    end
+
+    subgraph Consumers ["5. AI Agents & Consumers"]
+        MCP["Model Context Protocol (MCP)"]
+        CLI["CLI Interface"]
+        SYN["Local AI Synthesis (Ollama / Anki / Notes)"]
+    end
+
+    Ingestion --> CH --> EMB
+    EMB --> VEC
+    CH --> FTS
+    FTS --> BM25 --> RRF
+    VEC --> ANN --> RRF
+    RRF --> RERANK
+    RERANK --> MCP
+    RERANK --> CLI
+    RERANK --> SYN
+```
+
+---
+
+## 📥 Ingestion Support Matrix
+
+| Source Type | Extractor Engine | Key Capabilities |
+|:---|:---|:---|
+| **YouTube Videos** | `youtube-transcript` / `yt-dlp-exec` | Timestamped captions, audio track fallback, chapter metadata |
+| **Web Pages & Articles** | `@mozilla/readability` / `cheerio` / `turndown` | Clean readability extraction, ad removal, clean Markdown conversion |
+| **PDF Documents** | `pdf-parse` | Multi-page text streaming, whitespace normalization, header stripping |
+| **Word Documents** | `mammoth` | Structured `.docx` XML transformation to clean semantic Markdown |
+| **RSS / Atom Feeds** | `rss-parser` | Feed item crawling, publication date tracking, bulk content ingestion |
+| **Local Directories** | Recursive file scanner | Batch ingestion of code repositories, documentation directories, notes |
 
 ---
 
 ## 📦 Installation
-Install globally via npm:
+
+Install globally via **npm**:
+
 ```bash
 npm install -g vidilearn
+```
+
+Or run directly without global installation using **npx**:
+
+```bash
+npx vidilearn --help
 ```
 
 ---
 
 ## 🚀 Quick Start
-Ingest a document or YouTube video:
+
+### 1. Ingest Knowledge
+Ingest a technical YouTube lecture, article, or local documentation:
+
 ```bash
+# Ingest YouTube video transcripts
 vidilearn ingest https://www.youtube.com/watch?v=sal78ACtGTc
+
+# Ingest an article or documentation page
+vidilearn ingest https://developer.mozilla.org/en-US/docs/Web/API
+
+# Ingest local Markdown or PDF folder
+vidilearn ingest ./docs/architecture.pdf
 ```
 
-Perform a hybrid search over ingested knowledge:
+### 2. Query with Hybrid Search
+Search across all ingested materials with semantic hybrid retrieval:
+
 ```bash
-vidilearn search "agentic workflows design patterns" --hybrid
+vidilearn search "agentic workflows and tool-calling patterns" --hybrid
 ```
 
-Generate Cornell study notes, flashcards, and quizzes:
+### 3. Generate Study Notes & Flashcards
+Synthesize Cornell notes, flashcards (Anki TSV), and Obsidian markdown:
+
 ```bash
 vidilearn study https://www.youtube.com/watch?v=sal78ACtGTc
 ```
 
-Analyze video transcript density for clips hooks:
+### 4. Extract Hook Timestamps & Clips
+Detect high-density segments and pivotal topic transitions:
+
 ```bash
 vidilearn clips https://www.youtube.com/watch?v=sal78ACtGTc
 ```
 
 ---
 
-## 🛠️ Architecture
+## 🤖 Model Context Protocol (MCP) Integration
 
-```mermaid
-graph TD
-  A[YouTube / PDF / DOCX / Folder / RSS] -->|Ingest & Chunk| B[Embedding Pipeline: all-MiniLM-L6-v2]
-  B -->|Normalized Vector BLOB| C[SQLite Database]
-  C -->|Native C++ Indexing| D[vec_chunks table: sqlite-vec]
-  C -->|Text Matching| E[chunks_fts table: FTS5]
-  D -->|Semantic Matcher| F[RRF Hybrid Fusion]
-  E -->|BM25 Matcher| F
-  F -->|Top Candidates| G[Batched Neural Reranker: ms-marco-MiniLM-L-6-v2]
-  G -->|Filtered & Ranked Results| H[CLI / MCP / AI Study Outputs]
+Vidilearn includes a native **Model Context Protocol (MCP)** server over `stdio`, allowing coding assistants to query your local knowledge base during generation.
+
+### Claude Desktop Configuration
+Add Vidilearn to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "vidilearn": {
+      "command": "npx",
+      "args": ["-y", "vidilearn", "mcp-server"]
+    }
+  }
+}
+```
+
+### Cursor / Antigravity / AI Agent Configuration
+Add to your agent settings or MCP manifest:
+
+```json
+{
+  "name": "vidilearn",
+  "command": "vidilearn",
+  "args": ["mcp-server"]
+}
+```
+
+#### Exposed MCP Tools:
+- `search_knowledge`: Execute high-precision semantic hybrid search against your indexed chunks.
+- `ingest_resource`: Dynamically ingest URLs or local files into the active agent context.
+- `get_document_metadata`: Inspect document titles, hashes, and source provenance.
+
+---
+
+## 📊 Performance Benchmarks
+
+Benchmarked against **100,000 synthetic chunks** (~205 MB SQLite Database):
+
+| Metric | Measured Value | SLA Target | Status |
+|:---|:---:|:---:|:---:|
+| **Embedding Throughput** | **1,433 chunks/min** | > 500 chunks/min | ✅ Passed |
+| **Search Latency (Warm)** | **53.5 ms** | < 100 ms | ✅ Passed |
+| **First Search (Cold Boot)** | **336.9 ms** | < 400 ms | ✅ Passed |
+| **RAM Idle Footprint** | **64.0 MB** | < 300 MB | ✅ Passed |
+| **RAG Precision Accuracy** | **100% (3/3)** | 100% | ✅ Passed |
+
+---
+
+## 📋 Command Reference
+
+| Command | Arguments / Flags | Description |
+|:---|:---|:---|
+| `vidilearn ingest` | `<target>` | Ingest YouTube URL, web article, PDF, DOCX, or directory |
+| `vidilearn search` | `<query> [--hybrid] [--limit <n>]` | Hybrid FTS5 + `sqlite-vec` query with RRF ranking |
+| `vidilearn study` | `<target> [--format <tsv\|md>]` | Export Cornell notes, flashcards, and quizzes |
+| `vidilearn clips` | `<url>` | Identify top pacing and hook clip timestamps with deep links |
+| `vidilearn summarize`| `<target> [--type <blog\|thread>]` | Summarize content using local Ollama models |
+| `vidilearn graph` | `[--output <file>]` | Generate knowledge graph Mermaid diagram of entities |
+| `vidilearn doctor` | None | Run database integrity checks, corruptions, and schema audits |
+| `vidilearn audit` | None | Verify chunk hashes and duplicate detection metrics |
+| `vidilearn evaluate`| None | Test retrieval precision, recall, and cross-domain separation |
+| `vidilearn trace` | `<chunk-id>` | Trace chunk source text, document origin, and metadata |
+| `vidilearn metrics` | None | Display physical DB file size, chunk counts, and memory usage |
+| `vidilearn mcp-server`| None | Start stdio Model Context Protocol (MCP) server |
+
+---
+
+## 💻 Programmatic API
+
+Vidilearn can be imported directly into Node.js / TypeScript applications:
+
+```javascript
+import { IngestionEngine, HybridSearcher } from 'vidilearn';
+
+// 1. Ingest content programmatically
+const engine = new IngestionEngine();
+await engine.ingest('https://www.youtube.com/watch?v=sal78ACtGTc');
+
+// 2. Perform hybrid retrieval
+const searcher = new HybridSearcher();
+const results = await searcher.query('How does reciprocal rank fusion work?', {
+  hybrid: true,
+  limit: 5
+});
+
+console.log(results);
 ```
 
 ---
 
-## 📊 Scale Benchmarks (Real Measured Telemetry)
-Tested on **100,000 synthetic chunks** (~205 MB Database):
+## 🛡️ Security & Privacy
 
-| Metric | Measured Value | Target | Status |
-|---|---|---|---|
-| **Embedding Throughput** | **1433 chunks/min** | > 500 chunks/min | ✅ PASSED |
-| **Search Latency** | **53.5ms** | < 100ms | ✅ PASSED |
-| **First Search (Cold Boot)** | **336.9ms** | < 400ms | ✅ PASSED |
-| **RAM Idle Footprint** | **64.0 MB** | < 300MB | ✅ PASSED |
-| **RAG Precision Accuracy** | **100% (3/3)** | 100% | ✅ PASSED |
+- **Zero Remote Telemetry**: Vidilearn sends zero tracking, analytics, or behavioral telemetry.
+- **Local Storage**: All vector embeddings and indexes remain in a local SQLite file on your disk.
+- **No API Keys Needed**: Does not require OpenAI, Anthropic, or external embedding API keys to operate.
+- **Memory-Safe Concurrency**: Features built-in LRU caching and single-flight request coalescing to prevent thundering herd locks on Node.js worker threads.
 
 ---
 
-## 📋 Commands Reference
+## 🤝 Contributing
 
-| Command | Description |
-|---|---|
-| `vidilearn ingest <target>` | Ingest target document, RSS feed, local folder, or URL into memory |
-| `vidilearn search <query>` | Query database using RRF hybrid FTS5 and semantic vector search |
-| `vidilearn study <target>` | ExportCornell notes, flashcards, and quizzes to Anki TSV/Obsidian MD |
-| `vidilearn clips <url>` | Identify top pacing and hook clip timestamps with deep links |
-| `vidilearn summarize <target>` | Generate local summaries (blog, notes, twitter thread, podcast recap) |
-| `vidilearn graph` | Generate knowledge graph Mermaid flowcharts linking documents & entities |
-| `vidilearn doctor` | Check database schema, corruptions, duplicate records, and diagnostics |
-| `vidilearn audit` | Verify chunks hash duplicate detections |
-| `vidilearn evaluate` | Evaluate precision, recall, and cross-domain leakage |
-| `vidilearn trace <id>` | Trace chunk source text, document link, and metadata by UUID |
-| `vidilearn metrics` | Print physical database file sizes, chunk counts, and memory telemetry |
-| `vidilearn mcp-server` | Start stdio Model Context Protocol (MCP) server |
+Contributions are warmly welcomed! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) guide and code of conduct before opening pull requests.
+
+```bash
+# Clone the repository
+git clone https://github.com/Alfo-Tech-Lab/vidilearn.git
+
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+```
 
 ---
 
-## 🔒 Local-First Philosophy
-Vidilearn runs **100% on your machine**. It requires no external API keys, collects no user search history, and makes no network telemetry calls. All embeddings, text parsing, database index construction, and cross-encoder reranking operations execute locally inside the package runtime environment. For advanced AI reasoning or generation, it connects to your local Ollama instance, ensuring complete data privacy.
+## 📄 License
+
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.

@@ -1,38 +1,49 @@
 <div align="center">
 
-# ⚡ Vidilearn
+<h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; font-weight: 800; letter-spacing: -0.04em; font-size: 2.85em; margin-bottom: 0.1em; color: #0f172a;">
+  Vidilearn
+</h1>
 
-### AI-Native Universal Knowledge Ingestion & Semantic Hybrid Retrieval Engine
-
-[![npm version](https://img.shields.io/npm/v/vidilearn.svg?style=flat-square&color=0891B2)](https://www.npmjs.com/package/vidilearn)
-[![npm downloads](https://img.shields.io/npm/dm/vidilearn.svg?style=flat-square&color=10B981)](https://www.npmjs.com/package/vidilearn)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg?style=flat-square)](package.json)
-[![MCP Protocol](https://img.shields.io/badge/MCP-Compatible-purple.svg?style=flat-square)](https://modelcontextprotocol.io/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-orange.svg?style=flat-square)](CONTRIBUTING.md)
-
-<p align="center">
-  <b>Vidilearn</b> is a production-grade, local-first knowledge retrieval engine designed for autonomous AI agents, coding environments, and developers. It ingests multi-modal documentation, web pages, and video transcripts into a unified SQLite database, delivering sub-100ms hybrid searches with zero external API dependencies.
+<p style="font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace; font-size: 0.9em; letter-spacing: 0.1em; text-transform: uppercase; color: #0284c7; font-weight: 600; margin-top: 0;">
+  AI-Native Knowledge Ingestion &amp; Semantic Hybrid Retrieval Engine
 </p>
 
-[Quick Start](#-quick-start) • [Architecture](#-architecture) • [MCP Server Setup](#-model-context-protocol-mcp-integration) • [Benchmarks](#-performance-benchmarks) • [CLI Reference](#-command-reference)
+[![npm version](https://img.shields.io/npm/v/vidilearn.svg?style=flat-square&color=0f172a)](https://www.npmjs.com/package/vidilearn)
+[![npm downloads](https://img.shields.io/npm/dm/vidilearn.svg?style=flat-square&color=0f172a)](https://www.npmjs.com/package/vidilearn)
+[![License: MIT](https://img.shields.io/badge/license-MIT-0f172a.svg?style=flat-square)](LICENSE)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-0f172a.svg?style=flat-square)](package.json)
+[![MCP Protocol](https://img.shields.io/badge/mcp-compatible-0f172a.svg?style=flat-square)](https://modelcontextprotocol.io/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-0f172a.svg?style=flat-square)](CONTRIBUTING.md)
+
+<p align="center" style="font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; font-size: 1.05em; line-height: 1.6; max-width: 780px; color: #334155;">
+  Vidilearn is a production-grade, local-first knowledge retrieval engine designed for autonomous AI agents, coding environments, and developers. It ingests multi-modal documentation, web pages, and video transcripts into a unified SQLite database, delivering sub-100ms hybrid searches with zero external API dependencies.
+</p>
+
+<p align="center" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85em; letter-spacing: 0.04em;">
+  <a href="#key-capabilities">Capabilities</a> &bull;
+  <a href="#architecture">Architecture</a> &bull;
+  <a href="#quick-start">Quick Start</a> &bull;
+  <a href="#model-context-protocol-mcp">MCP Server</a> &bull;
+  <a href="#performance--scale">Benchmarks</a> &bull;
+  <a href="#command-reference">CLI Reference</a>
+</p>
 
 </div>
 
 ---
 
-## 🌟 Key Highlights
+## Key Capabilities
 
-- **⚡ Native C++ Vector Search**: Powered by `sqlite-vec` and `better-sqlite3`, querying 100,000+ vector chunks in **under 60ms** with zero memory leaks.
-- **🔍 Hybrid Retrieval (RRF)**: Fuses Full-Text Search (`FTS5` BM25) with Approximate Nearest Neighbors (`ANN` vector search) using dynamic Reciprocal Rank Fusion.
-- **🎯 Batched Neural Reranker**: Integrates local cross-encoder models (`ms-marco-MiniLM-L-6-v2`) to re-score candidate chunks for maximum precision.
-- **🤖 Native MCP Server**: Built on `@modelcontextprotocol/sdk` to serve live retrieval tools directly to AI coding agents (Claude Desktop, Cursor, Antigravity, OpenAI Codex).
-- **📥 Universal Ingestion**: Ingests YouTube transcripts, dynamic web pages, PDF documents, DOCX files, Markdown trees, and RSS feeds.
-- **🔒 100% Offline & Private**: Zero cloud API keys required. All embeddings (`all-MiniLM-L6-v2`), parsing, and storage remain strictly on your local machine.
+- **Native C++ Vector Search**: Powered by `sqlite-vec` and `better-sqlite3`, querying 100,000+ vector chunks in under 60ms with zero memory leaks.
+- **Hybrid Retrieval (RRF)**: Fuses Full-Text Search (`FTS5` BM25) with Approximate Nearest Neighbors (`ANN` vector search) using dynamic Reciprocal Rank Fusion.
+- **Batched Neural Reranker**: Integrates local cross-encoder models (`ms-marco-MiniLM-L-6-v2`) to re-score candidate chunks for maximum precision.
+- **Native MCP Server**: Built on `@modelcontextprotocol/sdk` to serve live retrieval tools directly to AI coding agents (Claude Desktop, Cursor, Antigravity, OpenAI Codex).
+- **Universal Ingestion**: Ingests YouTube transcripts, dynamic web pages, PDF documents, DOCX files, Markdown trees, and RSS feeds.
+- **Offline & Privacy-First**: Zero cloud API keys required. All embeddings (`all-MiniLM-L6-v2`), parsing, and storage execute strictly within the local runtime environment.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart TD
@@ -44,10 +55,10 @@ flowchart TD
 
     subgraph Processing ["2. Chunking & Embeddings"]
         CH["Sliding Window Chunker"]
-        EMB["HuggingFace Transformers (all-MiniLM-L6-v2)"]
+        EMB["HuggingFace Transformers: all-MiniLM-L6-v2"]
     end
 
-    subgraph Storage ["3. Embedded Storage (SQLite)"]
+    subgraph Storage ["3. Embedded Storage: SQLite"]
         FTS[("FTS5 Full-Text Index")]
         VEC[("sqlite-vec C++ Native Index")]
     end
@@ -56,13 +67,13 @@ flowchart TD
         BM25["BM25 Keyword Scoring"]
         ANN["Cosine Similarity ANN"]
         RRF["Reciprocal Rank Fusion (RRF)"]
-        RERANK["Cross-Encoder Reranker (ms-marco-MiniLM)"]
+        RERANK["Cross-Encoder Reranker: ms-marco-MiniLM"]
     end
 
     subgraph Consumers ["5. AI Agents & Consumers"]
         MCP["Model Context Protocol (MCP)"]
         CLI["CLI Interface"]
-        SYN["Local AI Synthesis (Ollama / Anki / Notes)"]
+        SYN["Local AI Synthesis: Ollama / Anki / Notes"]
     end
 
     Ingestion --> CH --> EMB
@@ -78,7 +89,7 @@ flowchart TD
 
 ---
 
-## 📥 Ingestion Support Matrix
+## Ingestion Support Matrix
 
 | Source Type | Extractor Engine | Key Capabilities |
 |:---|:---|:---|
@@ -91,7 +102,7 @@ flowchart TD
 
 ---
 
-## 📦 Installation
+## Installation
 
 Install globally via **npm**:
 
@@ -99,7 +110,7 @@ Install globally via **npm**:
 npm install -g vidilearn
 ```
 
-Or run directly without global installation using **npx**:
+Or execute directly without global installation using **npx**:
 
 ```bash
 npx vidilearn --help
@@ -107,7 +118,7 @@ npx vidilearn --help
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Ingest Knowledge
 Ingest a technical YouTube lecture, article, or local documentation:
@@ -146,7 +157,7 @@ vidilearn clips https://www.youtube.com/watch?v=sal78ACtGTc
 
 ---
 
-## 🤖 Model Context Protocol (MCP) Integration
+## Model Context Protocol (MCP)
 
 Vidilearn includes a native **Model Context Protocol (MCP)** server over `stdio`, allowing coding assistants to query your local knowledge base during generation.
 
@@ -182,21 +193,21 @@ Add to your agent settings or MCP manifest:
 
 ---
 
-## 📊 Performance Benchmarks
+## Performance & Scale
 
 Benchmarked against **100,000 synthetic chunks** (~205 MB SQLite Database):
 
 | Metric | Measured Value | SLA Target | Status |
 |:---|:---:|:---:|:---:|
-| **Embedding Throughput** | **1,433 chunks/min** | > 500 chunks/min | ✅ Passed |
-| **Search Latency (Warm)** | **53.5 ms** | < 100 ms | ✅ Passed |
-| **First Search (Cold Boot)** | **336.9 ms** | < 400 ms | ✅ Passed |
-| **RAM Idle Footprint** | **64.0 MB** | < 300 MB | ✅ Passed |
-| **RAG Precision Accuracy** | **100% (3/3)** | 100% | ✅ Passed |
+| **Embedding Throughput** | `1,433 chunks/min` | `> 500 chunks/min` | `PASSED` |
+| **Search Latency (Warm)** | `53.5 ms` | `< 100 ms` | `PASSED` |
+| **First Search (Cold Boot)** | `336.9 ms` | `< 400 ms` | `PASSED` |
+| **RAM Idle Footprint** | `64.0 MB` | `< 300 MB` | `PASSED` |
+| **RAG Precision Accuracy** | `100% (3/3)` | `100%` | `PASSED` |
 
 ---
 
-## 📋 Command Reference
+## Command Reference
 
 | Command | Arguments / Flags | Description |
 |:---|:---|:---|
@@ -215,7 +226,7 @@ Benchmarked against **100,000 synthetic chunks** (~205 MB SQLite Database):
 
 ---
 
-## 💻 Programmatic API
+## Programmatic API
 
 Vidilearn can be imported directly into Node.js / TypeScript applications:
 
@@ -238,7 +249,7 @@ console.log(results);
 
 ---
 
-## 🛡️ Security & Privacy
+## Security & Privacy
 
 - **Zero Remote Telemetry**: Vidilearn sends zero tracking, analytics, or behavioral telemetry.
 - **Local Storage**: All vector embeddings and indexes remain in a local SQLite file on your disk.
@@ -247,9 +258,9 @@ console.log(results);
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are warmly welcomed! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) guide and code of conduct before opening pull requests.
+Contributions are warmly welcomed. Please read our [CONTRIBUTING.md](CONTRIBUTING.md) guide and code of conduct before opening pull requests.
 
 ```bash
 # Clone the repository
@@ -264,6 +275,6 @@ npm test
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
